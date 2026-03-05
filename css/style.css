@@ -1,0 +1,10 @@
+/* ============================================
+   Arquivo: css/style.css
+   Função: Estilos personalizados do projeto
+   Obs: O Tailwind CSS é carregado via CDN no HTML
+   ============================================ */
+
+/* Exemplo de estilo customizado */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
