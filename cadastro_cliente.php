@@ -182,7 +182,7 @@ $cliente = mysqli_query($conexao, $sql);
                 <!-- Campo telefone -->
                 <div class="mb-4">
                     <label for="telefone" class="block text-gray-700 font-medium mb-2">
-                    telefone
+                    Telefones
                     </label>
                     <input
                         type="text"
@@ -197,7 +197,7 @@ $cliente = mysqli_query($conexao, $sql);
                 <!-- Campo endereco -->
                 <div class="mb-4">
                     <label for="endereco_completo" class="block text-gray-700 font-medium mb-2">
-                    endereco
+                    Endereço
                     </label>
                     <input
                         type="text"
@@ -227,7 +227,7 @@ $cliente = mysqli_query($conexao, $sql);
                 <!--campo cpf-->
                 <div class="mb-4">
                     <label for="cpf" class="block text-gray-700 font-medium mb-2">
-                    cpf
+                    CPF
                     </label>
                     <input
                         type="text"

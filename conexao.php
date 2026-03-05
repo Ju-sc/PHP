@@ -12,6 +12,7 @@ $servidor = "localhost";
 $usuario  = "root";
 $senha    = "";
 $banco    = "projeto";
+$idVisual = 0;
 
 // Criar a conexão usando mysqli
 $conexao = mysqli_connect($servidor, $usuario, $senha, $banco);

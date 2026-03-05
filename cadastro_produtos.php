@@ -197,7 +197,7 @@ $produtos = mysqli_query($conexao, $sql);
                 <!-- Campo endereco -->
                 <div class="mb-4">
                     <label for="codbar" class="block text-gray-700 font-medium mb-2">
-                    código de barras
+                    Código de barras
                     </label>
                     <input
                         type="text"
@@ -268,7 +268,7 @@ $produtos = mysqli_query($conexao, $sql);
                 <tbody>
                     <?php  while ($u = mysqli_fetch_assoc($produtos)): ?>
                         <tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="px-4 py-3"><?php echo $u["id"]; ?></td>
+                            <td class="px-4 py-3"><?php echo $idVisual +=1; ?></td>
                             <td class="px-4 py-3"><?php echo $u["NomeProd"]; ?></td>
                             <td class="px-4 py-3">
                             <?php if (!empty($u["imagem"])): ?>

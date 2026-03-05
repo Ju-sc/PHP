@@ -7,6 +7,7 @@ $id = $_GET["id"];
 $tabela = $_GET["tabela"];
 $pagina = $_GET["pagina"];
 
+
  // Buscar imagem para apagar o arquivo
  $sql = "SELECT imagem FROM $tabela WHERE id = '$id'";
  $res = mysqli_query($conexao, $sql);
@@ -25,6 +26,7 @@ echo "Arquivo existe? " . (file_exists($caminho) ? "SIM" : "NÃO") . "<br>";
 // Monta o comando de apagar e executa direto
 $sql = "DELETE FROM $tabela WHERE id = $id";
 mysqli_query($conexao, $sql);
+$idVisual -=1;
 
 // 4. Volta para a página que pediu a exclusão
 header("Location: $pagina");

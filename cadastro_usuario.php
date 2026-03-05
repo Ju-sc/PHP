@@ -8,7 +8,6 @@
 session_start();
 
 
-
 // Incluir o arquivo de conexão com o banco
 require_once "conexao.php";
 
@@ -16,32 +15,56 @@ require_once "conexao.php";
 $sucesso = "";
 $erro = "";
 
+$editando= null;
+
+
+if (isset($_GET["editar"])){
+    $id = $_GET["editar"];
+    $sql = "SELECT * FROM usuario WHERE id = '$id'";
+    $res=mysqli_query($conexao,$sql);
+    $editando = mysqli_fetch_assoc($res);
+}
+// Se $editando tiver dados, o formulario vai aparecer preenchido
+// Se $editando for null, o formulario aparece vazio (cadastro)
+
 // Verificar se o formulário de cadastro foi enviado
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $nome  = $_POST["nome"];
     $email = $_POST["email"];
     $senha = $_POST["senha"];
+    
+// Verificar se o email já existe
+$sql = "SELECT * FROM usuario WHERE email = '$email'";
+$resultado = mysqli_query($conexao, $sql);
 
-    // Verificar se o email já existe
-    $sql = "SELECT * FROM usuario WHERE email = '$email'";
-    $resultado = mysqli_query($conexao, $sql);
+    if (empty($erro)) {
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $erro = "Este email já está cadastrado.";
+        // Se veio ID = estamos EDITANDO
+        if (!empty($_POST["id"])) {
+            $id = $_POST["id"];
+            $sql = "UPDATE usuario
+                    SET nome = '$nome',
+                        email = '$email',
+                        senha = '$senha',
+                        WHERE id = '$id'";
     } else {
-        // Criptografar a senha
-        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-
-        // Inserir o novo usuário
-        $sql = "INSERT INTO usuario (nome, email, senha) VALUES ('$nome', '$email', '$senhaHash')";
-
-        if (mysqli_query($conexao, $sql)) {
-            $sucesso = "Usuário cadastrado com sucesso!";
-        } else {
-            $erro = "Erro ao cadastrar usuário.";
+            // Criptografar a senha
+            $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+        
+            // Inserir o novo usuário
+            $sql = "INSERT INTO usuario (nome, email, senha) VALUES ('$nome', '$email', '$senhaHash')";
+        
+            if (mysqli_query($conexao, $sql)) {
+                $sucesso = "Usuário cadastrado com sucesso!";
+            } else {
+                $erro = "Erro ao cadastrar usuário.";
+            }
         }
     }
+if (mysqli_num_rows($resultado) > 0) {
+    $erro = "Este email já está cadastrado.";
+} 
 }
 
 // Buscar todos os usuários para listar
@@ -125,7 +148,11 @@ $usuarios = mysqli_query($conexao, $sql);
 
         <!-- Formulário de Cadastro -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8 max-w-xl">
-            <form method="POST" action="cadastro_usuario.php">
+        <form method="POST" enctype="multipart/form-data">
+             <!-- Campo oculto: se estiver editando, envia o ID -->
+                    <?php if ($editando): ?>
+                    <input type="hidden" name="id" value="<?= $editando["id"] ?>">
+                    <?php endif; ?>
 
                 <!-- Campo Nome -->
                 <div class="mb-4">
@@ -133,13 +160,15 @@ $usuarios = mysqli_query($conexao, $sql);
                         Nome
                     </label>
                     <input
+                    value="<?= $editando["nome"] ?? "" ?>"
                         type="text"
                         id="nome"
                         name="nome"
                         required
                         placeholder="Digite o nome"
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
+                        
+                        >   
                 </div>
 
                 <!-- Campo Email -->
@@ -148,6 +177,7 @@ $usuarios = mysqli_query($conexao, $sql);
                         Email
                     </label>
                     <input
+                    value="<?= $editando["email"] ?? "" ?>"
                         type="email"
                         id="email"
                         name="email"
@@ -174,10 +204,10 @@ $usuarios = mysqli_query($conexao, $sql);
 
                 <!-- Botão Cadastrar -->
                 <button
+                
                     type="submit"
-                    class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200"
-                >
-                    Cadastrar
+                    class="w-full bg-blue-800 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200" >
+                    <?= $editando ? "Salvar Alteracoes" : "Cadastrar Produto" ?> 
                 </button>
 
             </form>
@@ -193,19 +223,28 @@ $usuarios = mysqli_query($conexao, $sql);
                         <th class="px-4 py-3 text-left">Nome</th>
                         <th class="px-4 py-3 text-left">Email</th>
                         <th class="px-4 py-3 text-left rounded-tr-lg">Criado em</th>
+                        <th class="px-4 py-3 text-left">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php while ($u = mysqli_fetch_assoc($usuarios)): ?>
                         <tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="px-4 py-3"><?php echo $u["id"]; ?></td>
+                            <td class="px-4 py-3"><?php echo $idVisual +=1; ?></td>
                             <td class="px-4 py-3"><?php echo $u["nome"]; ?></td>
                             <td class="px-4 py-3"><?php echo $u["email"]; ?></td>
                             <td class="px-4 py-3 text-gray-500"><?php echo $u["criado_em"]; ?></td>
-                            <td class="px-4 py-3">
-                            <a href="delete.php?id=<?php echo $u['id']; ?>&tabela=usuario&pagina=cadastro_usuario.php" onclick="return confirm('Tem certeza?');" class="text-red-500 hover:text-red-700 text-lg">
-                                🗑️
+                            <td class="px-4 py-3 ">
+                            <a href="deleteUsuario.php?id=<?php echo $u['id']; ?>&tabela=usuario&pagina=cadastro_usuario.php" onclick="return confirm('Tem certeza?');" 
+                            class="flex items-center px-6 py-3 text-red-900 hover:text-red-700 tex t-lg">
+                            🗑️
+                            Excluir
                             </a>
+                            <a href="cadastro_usuario.php?editar=<?= $u['id']?>"
+                            class="flex items-center px-6 py-3 text-blue-600 hover:text-red-500">
+                                📝 
+                                Editar
+                            </a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
